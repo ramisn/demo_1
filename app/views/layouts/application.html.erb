@@ -1,14 +1,403 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Demo1</title>
-  <%= stylesheet_link_tag    "application", :media => "all" %>
-  <%= javascript_include_tag "application" %>
-  <%= csrf_meta_tags %>
-</head>
-<body>
+	<head>
+		<title>amuzzin</title>
+		<%= stylesheet_link_tag    "application", :media => "all" %>
+		<%= javascript_include_tag "application" %>
 
-<%= yield %>
+		<%= csrf_meta_tags %>
 
-</body>
+		<script type="text/javascript">
+			$(function() {
+				//$('body').queryLoader2();
+				// Setup drop down menu
+				$('.dropdown-toggle').dropdown();
+
+				// Fix input element click problem
+				$('.dropdown input, .dropdown label').click(function(e) {
+					e.stopPropagation();
+				});
+			});
+
+			$('#change_pass').on('click', function(e) {
+				e.preventDefault();
+				$('#emptydiv1').bPopup({
+					opacity : 0.8,
+					loadUrl : '/passwords/edit',
+				});
+			});
+
+			$.fn.serializeObject = function() {
+				var values = {}
+				var id = this.attr('id');
+				console.log(id);
+				$("#" + id + " input," + "#" + id + " select," + "#" + id + " textarea").each(function() {
+					values[this.name] = $(this).val();
+				});
+
+				return values;
+			}
+
+		</script>
+	</head>
+	<body style="color:#000000;font-size:12px;word-wrap:break-word;">
+		<%if user_signed_in?%>
+		<span id="signed_in_flag"></span>
+		<%end%>
+		<div id="page-load" align="center" style="position:absolute;top:35%;left:41%;">
+			<div id="page-load-status" style="font-weight: bold;margin-left:4%">
+				Loading Player...
+			</div>
+			<img src="loader.gif" width="200px;" />
+		</div>
+		<div id="main-content" style="display: none">
+		<!-- For Fb send button -->
+		<div id="fb-root"></div>
+
+		<script>
+			( function(d, s, id) {
+					var js, fjs = d.getElementsByTagName(s)[0];
+					if (d.getElementById(id))
+						return;
+					js = d.createElement(s);
+					js.id = id;
+					js.src = "//connect.facebook.net/en_GB/all.js#xfbml=1";
+					fjs.parentNode.insertBefore(js, fjs);
+				}(document, 'script', 'facebook-jssdk'));
+		</script>
+		<div id="flash">
+			<%= render :partial=>'/layouts/flash_messages'%>
+		</div>
+		<div class="navbar navbar-fixed-top basic-tour" data-intro="This main bar at the top, follows wherever you go. It is fixed so that you can access your music controls while moving between actions."  data-step="3">
+			<div class="navbar-inner" >
+				<ul class="nav">
+					<a class="brand ajax-link" href="/user/my_song" data-title="amuzzin [Cut.Share.Live] ">
+						<span class="pl-log player-brand" style="height:21px;position: absolute;top:8px;margin-left:-6px;" /></a>
+
+				</ul>
+
+				<ul class="nav pull-right">
+
+					<li class="nav">
+
+					</li>
+					<li class="nav">
+						<ul class="nav pull-right">
+							<%= render :partial => "layouts/login_links"%>
+						</ul>
+					</li>
+
+				</ul>
+
+			</div>
+		</div>
+
+		<div id="main" style="position:absolute;width:1090px;height:100%;left:50%;margin-left:-545px;top:40px;height:100%;width:100%">
+			<div id="emptydiv">
+				<div class="content">
+
+				</div>
+			</div>
+			<div id="emptydiv1">
+				<div class="content">
+
+				</div>
+			</div>
+			<div id="left-wrapper" style="position:absolute;left:0px;width:190px;height:100%;" >
+				<span class="pl-curve player-curved-left" style="position:fixed;z-index:999;margin-left:162px;"></span>
+				<div id="left-container" style="position:fixed;width:190px;height:100%;border-right:1px solid #999999;"></div>
+				<%if user_signed_in? %>
+				<div id="sidebar-menu" style="position: relative;width:190px;height:160px;margin-top:10px;border-bottom: solid 1px #999999;overflow:hidden" data-intro="The side menu here collects all the functionalities you can perform on this site. " data-step="3" data-position="right">
+
+					<div id="animate-div" style="border-right: 100px solid #CC3333;border-top: 50px solid transparent;border-bottom: 50px solid transparent;width: 0;height: 50px;margin-left: 165px;position:absolute;top:15px;cursor:pointer;">
+						<i class="icon-white icon-chevron-left" id="animate-menu-up"  style="margin-top:15px;margin-left: 5px;"></i>
+					</div>
+					<ul>
+						<!-- <li id="cuts" class="link-text-menu" data-intro="Cuts are Important feature and backbone of amuzzin. Your favourite clipping you cut from main song will appear here." data-step="6" data-position="right">
+							<a href="/cut_song/cut_song"  class="ajax-link" data-title="Amuzzin-My Cuts" ><i class="icon icon-film"></i> My Cuts</a>
+						</li> -->
+						<li id="songs" class="link-text-menu" data-intro="These are the list of Songs you have uploaded. You can come back any time and listen your songs." data-step="5" data-position="right" >
+							<a href="/user/my_song"  class="ajax-link" data-title="Amuzzin-My Songs"><i class="icon icon-music"></i> My Songs</a>
+						</li>
+						<!-- <li id="shared" class="link-text-menu" data-intro="Shared cuts are different from my cuts. If you share a clipping of a song it would appear in My Cuts. If some of your friends shares a song with you it would appear here." data-step="7" data-position="right">
+							<a href="/cut_song/shared_cuts"  class="ajax-link" data-title="Amuzzin-Shared Cuts"><i class="icon icon-share"></i> Shared Cuts </a><span class="notification-counter">1</span>
+						</li> -->
+
+	<li id="friend" class="link-text-menu" data-intro="Did we mention we integrate your facebook users automatically ? How cool is that ? Click on this tab and we will pull out what your friends are listening to. Don't thank me , thats why I'm here for :)" data-step="10" data-position="right">
+							<a href="/user/friends_radio" class="ajax-link" data-title="Amuzzin-Friends' Radio"><i class="icon icon-user"></i> Friends' Stream</a>
+							<% if current_user %>
+							<span id="online_count" class="online-counter">
+							<%=current_user.get_online_count %>
+							 </span>
+							 <%end%>
+						</li>
+
+						<% if current_user.blank? or current_user.enable_upload? %>
+						<li id="upload" class="link-text-menu" data-intro="To start with , you need to upload songs from your local. Please make sure you own the rights of the song to distribute." data-step="4" data-position="right">
+							<a href="/upload_song/uploader"  class="ajax-link" data-title="Amuzzin-Upload songs"><i class="icon icon-upload"></i> Upload Songs</a>
+						</li>
+					    <% end %>
+						
+
+						<li id="favourite" class="link-text-menu" data-intro="Hate playlists ? Love a song on top of everything else in the world ? Just favourite it and it would appear here :)" data-step="8" data-position="right">
+							<a href="/favourite/my_favourite"  class="ajax-link" data-title="Amuzzin-My Favourites"><i class="icon icon-heart"></i> Favourites</a>
+						</li>
+					
+						<li id="playlist" class="link-text-menu" data-intro="How good it would be if you can organize your songs based on your taste ? Just go to any of your song and click on playlist icon. Choose the playlist to tag and it comes here." data-step="9" data-position="right">
+							<a href="/playlists"  class="ajax-link" data-title="Amuzzin-My Playlists"><i class="icon icon-list"></i> Playlists</a>
+						</li>
+
+
+					</ul>
+				</div>
+				
+				<div id="current-queue" style="position:relative;height: 700px;margin-top:10px;">
+				<%else%>
+				<div id="current-queue" style="position:relative;height: 800px;margin-top:15px;">
+				<%end%>
+					<span style="font-family: 'Palitine Linotype',Serif; font-size: 20px;font-weight:bolder;"><span class="red">Current</span> Queue</span>
+					<div class="well well-small custom-container" style="width: 160px;margin-top: 7px;" >
+						<a href="#" id="shuffle-container" onclick="javascript:shuffle(1);return false;" style="float: left;">Shuffle:<span class="red">OFF</span></a><a href="#" id="loop-container" onclick="javascript:loop(1);return false;" style="float: right;">Loop:<span class="red">OFF</span></a>
+					</div>
+					<div style="position: relative;height:30px;top:-10px;"  >
+						<div class="dropdown pull-left">
+							<button class="btn btn-danger dropdown-toggle" data-toggle="dropdown" data-intro="Your playlist got dirty ? Just clear it from here." data-step="13">
+								<i class="icon-remove icon-white"></i>
+								<span>Clear</span>
+							</button>
+							<ul class="dropdown-menu confirm" style="margin-top:10px;">
+								<li>
+									Are you sure you want to clear the queue?
+								</li>
+								<li>
+									<button class="btn btn-danger pull-left" id="clear-playlist">
+										<span>Ok</span>
+									</button>
+									<button class="btn pull-right">
+										<span>Cancel</span>
+									</button>
+								</li>
+							</ul>
+						</div>
+						<div class="pull-right" style="margin-right: 10px;"  data-toggle="dropdown" data-intro="Create this queue as another playlist if you want to preserve this line of songs." data-step="14">
+							<button class="btn" id="save-as-playlist" style="margin-left:5px;">
+								<i class="icon-list icon"></i>
+								<span style="color: #000000">Save</span>
+							</button>
+						</div>
+					</div>
+					<div id="queue-playlist" style="position:relative;height:70px;width:100%;">
+						<% if user_signed_in? %>
+						<p>
+							Enter a playlist name:
+						</p>
+						<%= form_tag url_for(:controller=>'playlists',:action=>'save_queue'),:remote=>true,:method=>:post,:id=>'save-as-playlist-form'  do%>
+						<table>
+							<tr>
+								<td><%= text_field_tag 'save_as_playlist_name'%></td>
+								<td><%= submit_tag "Save",:style=>'position:relative;bottom:5px;left:5px;',:class=>"btn btn-danger"%></td>
+							</tr>
+						</table>
+						<% end %>
+						<%else%>
+						Sign in at the top corner to save this queue as playlist
+						<%end%>
+					</div>
+					<div id="playlist1" class="playlist" data-intro="Sometimes we may go messy rite ? Thats why we have queues. Add any song from anywhre you see on the page and it will automatically get queued here." data-step="12" data-position="right"></div>
+					<div style="height: 10px;border-bottom: solid 1px #999999;"></div>
+					<br>
+					<span class="topic" style="position:relative;font-family: 'Palitine Linotype',Serif; font-size: 20px;font-weight:bolder;"><span class="red">Related</span> Songs </span>
+					<br />
+					<br />
+					<div id="related-songs-container" style="position:relative;height:300px;width:190px;background-color:#ffffff;">
+
+					</div>
+				</div>
+			</div>
+			<div id="middle-container" style="position:absolute;left:191px;width:575px;height:100%">
+				<div id="player1" class="player" style="z-index:1035;position: fixed;width:576px;height:63px;top:20px;margin-left:-1px;" data-intro="Welcome to <b>amuzzin</b>. amuzzin is a repository for music lovers. Please follow me to find why we are better moustrap. This is the main Music Player. All your required music actions like play / pause / stop / seek / volume (+) or (-) will appear here for your conveneince"  data-step="1"></div>
+				<div id="search-bar" style="background-color:#FFFFFF;z-index:1030;position:fixed;top:63px;height:60px;width:575px;border-bottom: solid 1px #999999">
+					<form class="navbar-search" id="search-form" style="margin-top:25px;left:8px;" action="/utility/search_results" data-remote="true" onsubmit="put_state('/utility/search_results?query='+$('#search-text').val(),'Amuzzin-Search Results','/utility/search_results?query='+$('#search-text').val());" data-toggle="dropdown" data-intro="We don't need any explanation why we need a search. But this search does things beyond you think. Enter any random lyrics of a song or album name or even your friends name. We will find it for you and will return you the results. Please click on appropriate tab of search results to view all the results." data-step="15">
+
+						<input type="text" name="query" id="search-text" class="search-query span2" placeholder="Search for music, playlists and more"/>
+						<i class="icon icon-search" style="position:absolute;right:5px;top:7px;cursor:pointer" onclick="$('#search-form').submit();"></i>
+					</form>
+
+					<div id="loading-div" style="position:absolute;top: 22px;left:270px;">
+						<img src="/images/loading.gif" height="35" width="35" />
+					</div>
+					<%if user_signed_in?%>
+						
+  					<div id="show_activity_button" class="link red-hover" style="position:absolute;top: 30px;right:200px;font-size:14px;"  data-intro="Here you can see all your friend activities" data-step="23" data-position="left">
+  					<a href="/activities" class="ajax-link" data-title="Amuzzin-<%= current_user.name%>" >
+  								<i class="icon-globe"></i> Feed
+  							</a>
+ 					</div>
+
+  					<div id="take_tour_button" class="link red-hover" style="position:absolute;top: 30px;right:110px;font-size:14px;"  data-intro="You missed the tour ? You don't have enough time to go thru' completely ? Don't Worry , I am here always to take you around." data-step="22" data-position="left">
+  						<i class="icon-eye-close"></i> Try Tour
+ 					</div>
+					<div id="my-profile-link" style="position:absolute;top: 30px;right:20px;font-size:14px;" data-intro="You can view how your profile looks in Public searches by clicking here. "  data-step="16">
+						<a href="/user/profile?id=<%= current_user.id%>" class="ajax-link" data-title="Amuzzin-<%= current_user.name%>" ><i class="icon-home"></i> My Profile</a>
+					</div>
+					<%else%>
+					<div id="home" style="position:absolute;top: 30px;right:20px;font-size:14px;" >
+						<a href="/home" class="ajax-link" data-title="Amuzzin-Home" ><i class="icon-home"></i> Home</a>
+					</div>
+
+					<%end%>
+				</div>
+				<div id="upload-song-content" style="position:absolute;width:575px;min-height:90%;top:83px;z-index:999;visibility:hidden"></div>
+				<div id="content" style="position:absolute;width:575px;min-height:90%;top:83px;">
+
+				</div>
+			</div>
+			<div id="right-wrapper" style="position:absolute;left:766px;width:322px;height:100%;">
+				<span class="pl-curve player-curved-right" style="position:fixed;z-index:999;"></span>
+				<div id="right-container" style="position:fixed;width:322px;height:100%;border-right:1px solid #999999;border-left:1px solid #999999;"></div>
+				<div id="current-song-container" style="position:relative;top:20px;"></div>
+			</div>
+		</div>
+</div>
+  <script type="text/javascript">
+			var menu_toggle = 1;
+			$(document).ready(function() {
+				// Below is the name of the textfield that will be autocomplete
+				$('#search-text').autocomplete({
+					delay: 0,
+					minLength : 3,
+					source : '/utility/autocomplete',
+					messages: {
+						noResults: '',
+						results: function(){}
+					},
+					focus : function(event, ui) {
+						$('#search-text').val(ui.item.name);
+						return false;
+					},
+					select : function(event, ui) {
+						$('#search-text').val(ui.item.name);
+						$('form#search-form').submit();
+						return false;
+					}
+				}).data("ui-autocomplete")._renderItem = function(ul, item) {
+					return $("<li></li>").data("ui-autocomplete-item", item).append("<a><div style='height:37px;'><img class='small-image auto-image' src='" + item.picture + "' /><span style='position:absolute;left:50px;height:37px;overflow:hidden;float:right;'>" + item.name + " (" + item.type + ")</span></div></a>").appendTo(ul);
+				};
+				<% if user_signed_in? %>
+				$('body').on('click', '#animate-div', function() {
+					if (menu_toggle == 1) {
+						document.getElementById('animate-div').style.cssText = 'position:absolute;top:0px;right:5px;height:30px;z-index:10;background-color:#FFFFFF;';
+						$('#sidebar-menu').animate({
+							"height" : "30px"
+						}, "fast");
+						$('#sidebar-menu').animate({
+							"width" : "60px"
+						}, "fast");
+						$('#animate-div').html('<div style="position:relative;cursor:pointer;font-size:15px;margin-left:-5px;margin-top:5px;font-weight:bold" id="animate-menu-down"><b><span class="red">Menu</span></b><i class="icon-chevron-right"></i></div>');
+						$('#sidebar-menu').css('border-bottom', 'none');
+						$('#playlist1').parent().replaceWith(($('#playlist1')));
+						$('#playlist1').slimScroll({
+							height : '250px',
+							railVisible : true
+						});
+						menu_toggle = 0;
+					} else {
+						document.getElementById('animate-div').style.cssText = 'border-right: 100px solid #CC3333;border-top: 50px solid transparent;border-bottom: 50px solid transparent;width: 0;height: 50px;margin-left: 165px;position:absolute;top:15px;cursor:pointer;';
+						$('#sidebar-menu').animate({
+							"width" : "190px"
+						}, "fast");
+						$('#sidebar-menu').animate({
+							"height" : "160px"
+						}, "fast");
+						$('#animate-div').html('<i class="icon-white icon-chevron-left" id="animate-menu-up"  style="margin-top:15px;margin-left: 5px;"></i>');
+						$('#sidebar-menu').css('border-bottom', 'solid 1px #999999');
+						$('#playlist1').parent().replaceWith(($('#playlist1')));
+						$('#playlist1').slimScroll({
+							height : '190px',
+							railVisible : true
+						});
+						menu_toggle = 1;
+					}
+				});
+				<%end%>
+				$('#take_tour_button').on('click', function(e) {
+  					e.preventDefault();
+    				introJs().start();
+  				});
+
+				$('#queue-playlist').hide();
+				$('#flash').fadeIn('normal', function() {
+					$(this).delay(3500).fadeOut();
+				});
+				$('body').on('click', '.popup-close', function(event) {
+					$('#emptydiv').bPopup().close();
+					$('#emptydiv1').bPopup().close();
+				});
+				<%if user_signed_in? %>
+				$('#playlist1').slimScroll({
+					height : '180px',
+					railVisible : true
+				});
+				<%else%>
+				$('#playlist1').slimScroll({
+					height : '250px',
+					railVisible : true
+				});
+				<%end%>
+
+			});
+			$('#clear-playlist').click(function() {
+				clear_playlist(1);
+			});
+
+			$("#save-as-playlist").click(function() {
+				$('#save_as_playlist_name').val('');
+				$('#queue-playlist').slideToggle('medium', function() {
+				});
+			});
+			$("#save-as-playlist-form").submit(function() {
+				if ($('#save_as_playlist_name').val() == '') {
+					alert('Enter a playlist name for the queue');
+					return false;
+				}
+				$('#queue-playlist').slideUp('medium', function() {
+				});
+			});
+		</script>
+  <script type="text/javascript">
+    <% if current_user %>
+
+     var socket = io.connect('http://notify.amuzz.in/');
+
+      socket.on('connect', function(data){
+        setStatus('connected');
+        socket.emit('subscribe', {channel:'realtime'});
+      });
+
+      socket.on('reconnecting', function(data){
+        setStatus('reconnecting');
+      });
+
+      socket.on('message', function (data) {
+        console.log('received a message: ', data);
+        addMessage(data);
+      });
+
+      function addMessage(data) {
+
+		var libnotify = humane.create({baseCls: 'humane-libnotify', addnCls: 'humane-libnotify-error'})
+		libnotify.log(data+" is now Online",{timeout: 3000 , waitForMove: true , timeoutAfterMove: 2000})
+
+      	  $('#online_count').html(parseInt($('#online_count').html())+1);
+      }
+
+      function setStatus(msg) {
+          console.log('Connection Status : ' + msg);
+      }
+
+    <%end%>
+   </script>
+	</body>
+
 </html>
+
